@@ -4,7 +4,7 @@ import requests
 class GrokClient:
     def __init__(self, api_key):
         self.api_key = api_key
-        self.base_url = "https://api.groq.com/v1"  # Changed from api.grok.ai
+        self.base_url = "https://api.groq.com/openai/v1"  # Updated to include openai in path
         
     def generate_text(self, prompt):
         headers = {
@@ -13,13 +13,18 @@ class GrokClient:
         }
         
         payload = {
-            "prompt": prompt,
-            "model": "llama2-70b-4096",  # Specify the model
+            "model": "llama2-70b-4096",
+            "messages": [
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ],
             "max_tokens": 150
         }
         
         response = requests.post(
-            f"{self.base_url}/completion",  # Changed from /completions
+            f"{self.base_url}/chat/completions",  # Updated endpoint
             headers=headers,
             json=payload
         )
@@ -28,4 +33,4 @@ class GrokClient:
             raise Exception(f"Grok API error: {response.text}")
             
         result = response.json()
-        return json.loads(result['choices'][0]['text']) 
+        return json.loads(result['choices'][0]['message']['content']) 
