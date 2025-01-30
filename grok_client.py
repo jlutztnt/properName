@@ -4,7 +4,7 @@ import requests
 class GrokClient:
     def __init__(self, api_key):
         self.api_key = api_key
-        self.base_url = "https://api.grok.ai/v1"  # Replace with actual Grok API endpoint
+        self.base_url = "https://api.groq.com/v1"  # Changed from api.grok.ai
         
     def generate_text(self, prompt):
         headers = {
@@ -14,11 +14,12 @@ class GrokClient:
         
         payload = {
             "prompt": prompt,
+            "model": "llama2-70b-4096",  # Specify the model
             "max_tokens": 150
         }
         
         response = requests.post(
-            f"{self.base_url}/completions",
+            f"{self.base_url}/completion",  # Changed from /completions
             headers=headers,
             json=payload
         )
