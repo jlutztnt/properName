@@ -8,7 +8,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 class GrokClient:
     def __init__(self, api_key):
         self.api_key = api_key
-        self.base_url = "https://api.xai.sh/v1"  # Grok API endpoint
+        self.base_url = "https://api.grok.ai/v1"  # Updated API endpoint
         
     def generate_text(self, prompt):
         headers = {
@@ -19,14 +19,15 @@ class GrokClient:
         payload = {
             "prompt": prompt,
             "max_tokens": 150,
-            "temperature": 0.7
+            "temperature": 0.7,
+            "model": "grok-1"  # Added model specification
         }
         
         response = requests.post(
-            f"{self.base_url}/completions",
+            f"{self.base_url}/chat/completions",  # Updated to chat/completions endpoint
             headers=headers,
             json=payload,
-            verify=False  # Disable SSL verification
+            verify=False
         )
         
         if response.status_code != 200:
