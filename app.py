@@ -11,6 +11,11 @@ logger = logging.getLogger(__name__)
 # Load environment variables
 load_dotenv()
 
+# Debug: Print all environment variables
+logger.info("Environment variables:")
+for key, value in os.environ.items():
+    logger.info(f"{key}: {'*' * len(value)}")  # Mask the values for security
+
 app = Flask(__name__)
 
 # Move API key check into the analyze_name route
