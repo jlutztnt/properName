@@ -2,20 +2,45 @@ from flask import Flask, request, jsonify
 import os
 from dotenv import load_dotenv
 from grok_client import GrokClient
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Load environment variables
 load_dotenv()
 
-# Debug: Print environment variables
-api_key = os.getenv('GROK_API_KEY')
-if not api_key:
-    raise ValueError("GROK_API_KEY environment variable is not set")
-
 app = Flask(__name__)
-grok_client = GrokClient(api_key=api_key)
+
+# Move API key check into the analyze_name route
+grok_client = None
+
+@app.route('/', methods=['GET'])
+def health_check():
+    return jsonify({"status": "healthy"}), 200
 
 @app.route('/analyze-name', methods=['POST'])
 def analyze_name():
+    global grok_client
+    
+    # Initialize grok_client if not already done
+    if grok_client is None:
+        api_key = os.getenv('GROK_API_KEY')
+        if not api_key:
+            logger.error("GROK_API_KEY environment variable is not set")
+            return jsonify({
+                'error': 'API key not configured'
+            }), 500
+        try:
+            grok_client = GrokClient(api_key=api_key)
+            logger.info("GrokClient initialized successfully")
+        except Exception as e:
+            logger.error(f"Failed to initialize GrokClient: {str(e)}")
+            return jsonify({
+                'error': f'Failed to initialize API client: {str(e)}'
+            }), 500
+    
     data = request.get_json()
     
     if not data or 'first_name' not in data or 'last_name' not in data:
