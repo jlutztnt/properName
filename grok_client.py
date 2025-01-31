@@ -1,5 +1,9 @@
 import json
 import requests
+import urllib3
+
+# Disable SSL warnings
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 class GrokClient:
     def __init__(self, api_key):
@@ -21,7 +25,8 @@ class GrokClient:
         response = requests.post(
             f"{self.base_url}/completions",
             headers=headers,
-            json=payload
+            json=payload,
+            verify=False  # Disable SSL verification
         )
         
         if response.status_code != 200:
