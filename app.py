@@ -14,7 +14,10 @@ load_dotenv()
 # Debug: Print all environment variables
 logger.info("Environment variables:")
 for key, value in os.environ.items():
-    logger.info(f"{key}: {'*' * len(value)}")  # Mask the values for security
+    if key == 'GROK_API_KEY':
+        logger.info("Found GROK_API_KEY in environment!")
+        logger.info(f"GROK_API_KEY length: {len(value)}")
+    logger.info(f"{key}: {'*' * len(value)}")
 
 app = Flask(__name__)
 
@@ -23,7 +26,12 @@ grok_client = None
 
 @app.route('/', methods=['GET'])
 def health_check():
-    return jsonify({"status": "healthy"}), 200
+    api_key = os.getenv('GROK_API_KEY')
+    return jsonify({
+        "status": "healthy",
+        "api_key_present": api_key is not None,
+        "api_key_length": len(api_key) if api_key else 0
+    }), 200
 
 @app.route('/analyze-name', methods=['POST'])
 def analyze_name():
