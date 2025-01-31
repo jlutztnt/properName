@@ -11,8 +11,11 @@ class GrokClient:
         self.base_url = "https://api.x.ai"  # Updated base URL
         
     def generate_text(self, prompt):
+        # Remove 'Bearer ' if it's already in the API key
+        token = self.api_key.replace('Bearer ', '')
+        
         headers = {
-            "Authorization": f"Bearer {self.api_key}",
+            "Authorization": f"Bearer {token}",
             "Content-Type": "application/json"
         }
         
