@@ -3,10 +3,16 @@ import os
 from dotenv import load_dotenv
 from grok_client import GrokClient
 
+# Load environment variables
 load_dotenv()
 
+# Debug: Print environment variables
+api_key = os.getenv('GROK_API_KEY')
+if not api_key:
+    raise ValueError("GROK_API_KEY environment variable is not set")
+
 app = Flask(__name__)
-grok_client = GrokClient(api_key=os.getenv('GROK_API_KEY'))
+grok_client = GrokClient(api_key=api_key)
 
 @app.route('/analyze-name', methods=['POST'])
 def analyze_name():
