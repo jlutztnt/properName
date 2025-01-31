@@ -8,7 +8,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 class GrokClient:
     def __init__(self, api_key):
         self.api_key = api_key
-        self.base_url = "https://api.grok.ai/v1"  # Updated API endpoint
+        self.base_url = "https://api.x.ai"  # Updated base URL
         
     def generate_text(self, prompt):
         headers = {
@@ -17,14 +17,21 @@ class GrokClient:
         }
         
         payload = {
-            "prompt": prompt,
-            "max_tokens": 150,
-            "temperature": 0.7,
-            "model": "grok-1"  # Added model specification
+            "messages": [
+                {
+                    "role": "system",
+                    "content": "You are an AI assistant that analyzes names. You respond in JSON format with is_valid (boolean), formatted_name (string), and reasons (array of strings)."
+                },
+                {
+                    "role": "user",
+                    "content": prompt
+                }
+            ],
+            "model": "grok-2-latest"
         }
         
         response = requests.post(
-            f"{self.base_url}/chat/completions",  # Updated to chat/completions endpoint
+            f"{self.base_url}/v1/chat/completions",
             headers=headers,
             json=payload,
             verify=False
@@ -34,4 +41,4 @@ class GrokClient:
             raise Exception(f"Grok API error: {response.text}")
             
         result = response.json()
-        return json.loads(result['choices'][0]['text']) 
+        return json.loads(result['choices'][0]['message']['content']) 
